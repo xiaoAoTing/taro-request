@@ -1,0 +1,25 @@
+# 构建输出
+dist/
+*.tsbuildinfo
+
+# 依赖
+node_modules/
+
+# 日志
+*.log
+npm-debug.log*
+
+# 系统文件
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# 测试
+coverage/
+.nyc_output/
+
