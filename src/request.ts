@@ -1,6 +1,9 @@
 import Taro from '@tarojs/taro'
 import type { RequestConfig, TaroResponse, Interceptors, HttpMethod } from './types'
 
+// 重新导出类型
+export type { RequestConfig, TaroResponse, Interceptors, HttpMethod } from './types'
+
 /**
  * TaroRequest 类 - 用于处理 Taro 框架网络请求的封装类
  * 

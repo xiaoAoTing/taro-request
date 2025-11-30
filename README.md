@@ -1,15 +1,14 @@
 # @lightgreen/taro-request
 
-一个轻量级的 Taro 框架 HTTP 请求库，支持拦截器、自动 Token 管理等特性。
+一个轻量级的 Taro3 框架 HTTP 请求库，提供 axios 风格的 API。
 
 ## ✨ 特性
 
-- 🚀 基于 Taro 框架，支持微信小程序、H5 等多端
+- 🚀 基于 Taro3 框架，支持微信小程序、H5 等多端
 - 🔧 支持请求/响应拦截器
-- 🔐 可配置的 Token 管理
 - 📦 TypeScript 支持
 - 🎯 零依赖（除了 @tarojs/taro）
-- 💡 简单易用的 API
+- 💡 axios 风格的 API，简单易用
 
 ## 📦 安装
 
@@ -26,7 +25,7 @@ yarn add @lightgreen/taro-request
 ### 基础用法
 
 ```typescript
-import { TaroRequest, createRequest } from '@lightgreen/taro-request'
+import TaroRequest, { createRequest } from '@lightgreen/taro-request'
 
 // 方式1: 使用工厂函数创建实例
 const request = createRequest('https://api.example.com')
@@ -48,7 +47,7 @@ const newUser = await request.post('/users', {
 
 ```typescript
 import { createRequest } from '@lightgreen/taro-request'
-import { getRequestHeaders, CONTENT_TYPE } from '@lightgreen/taro-request'
+import Taro from '@tarojs/taro'
 
 const request = createRequest('https://api.example.com')
 
@@ -57,17 +56,11 @@ request.setRequestInterceptor(async (config) => {
   // 获取 Token（从你的存储中）
   const token = Taro.getStorageSync('token')
   
-  // 获取请求头
-  const headers = getRequestHeaders(
-    { contentType: config.header?.['Content-Type'] },
-    () => token, // getToken 回调
-    CONTENT_TYPE.json
-  )
-  
   // 合并请求头
   config.header = {
     ...config.header,
-    ...headers
+    'Content-Type': 'application/json;charset=UTF-8',
+    'Authorization': token ? `Bearer ${token}` : ''
   }
   
   return config
@@ -91,7 +84,7 @@ request.setResponseInterceptor(async (response) => {
 ### 完整示例
 
 ```typescript
-import { createRequest, getRequestHeaders, CONTENT_TYPE } from '@lightgreen/taro-request'
+import { createRequest } from '@lightgreen/taro-request'
 import Taro from '@tarojs/taro'
 
 // 创建请求实例
@@ -103,15 +96,10 @@ api.setRequestInterceptor(async (config) => {
   const token = Taro.getStorageSync('token')
   
   // 自动添加请求头
-  const headers = getRequestHeaders(
-    { contentType: config.header?.['Content-Type'] },
-    () => token,
-    CONTENT_TYPE.json
-  )
-  
   config.header = {
     ...config.header,
-    ...headers
+    'Content-Type': 'application/json;charset=UTF-8',
+    'Authorization': token ? `Bearer ${token}` : ''
   }
   
   // 添加时间戳防止缓存
@@ -253,7 +241,7 @@ request.setResponseInterceptor(async (response) => {
 })
 ```
 
-### 辅助函数
+### 工厂函数
 
 #### createRequest(baseURL?: string): TaroRequest
 
@@ -261,51 +249,6 @@ request.setResponseInterceptor(async (response) => {
 
 ```typescript
 const request = createRequest('https://api.example.com')
-```
-
-#### getRequestHeaders(config?, getToken?, defaultContentType?): Record<string, string>
-
-获取请求头。
-
-```typescript
-const headers = getRequestHeaders(
-  { contentType: 'application/json' },
-  () => Taro.getStorageSync('token'),
-  CONTENT_TYPE.json
-)
-```
-
-#### handleExpireToken(onTokenExpired?): void
-
-处理 Token 过期。
-
-```typescript
-handleExpireToken(() => {
-  Taro.navigateTo({ url: '/pages/login/index' })
-})
-```
-
-#### showErrorMsg(message: string): void
-
-显示错误消息。
-
-```typescript
-showErrorMsg('请求失败')
-```
-
-### 常量
-
-#### CONTENT_TYPE
-
-Content-Type 常量。
-
-```typescript
-import { CONTENT_TYPE } from '@lightgreen/taro-request'
-
-CONTENT_TYPE.json           // 'application/json;charset=UTF-8'
-CONTENT_TYPE.text           // 'text/plain;charset=UTF-8'
-CONTENT_TYPE.formUrlencoded // 'application/x-www-form-urlencoded;charset=UTF-8'
-CONTENT_TYPE.formData       // 'multipart/form-data;charset=UTF-8'
 ```
 
 ## 🔍 类型定义
@@ -334,6 +277,76 @@ interface TaroResponse {
 type HttpMethod = 'GET' | 'POST' | 'OPTIONS' | 'HEAD' | 'PUT' | 'DELETE' | 'TRACE' | 'CONNECT'
 ```
 
+## 🛠️ 本地调试
+
+### 方法一：使用 pnpm link（推荐）
+
+1. **在库目录中创建链接**
+```bash
+cd /path/to/taro-request
+pnpm link
+```
+
+2. **在 Taro 项目中使用链接**
+```bash
+cd /path/to/your-taro-project
+pnpm link @lightgreen/taro-request
+```
+
+3. **启动开发模式（自动监听文件变化并重新构建）**
+```bash
+# 在库目录中运行
+pnpm dev
+```
+
+4. **在 Taro 项目中正常使用**
+```typescript
+import TaroRequest, { createRequest } from '@lightgreen/taro-request'
+```
+
+### 方法二：使用 file: 协议
+
+在你的 Taro 项目的 `package.json` 中：
+
+```json
+{
+  "dependencies": {
+    "@lightgreen/taro-request": "file:../taro-request"
+  }
+}
+```
+
+然后运行：
+```bash
+pnpm install
+```
+
+### 方法三：使用 npm link
+
+如果使用 npm：
+
+```bash
+# 在库目录中
+cd /path/to/taro-request
+npm link
+
+# 在 Taro 项目中
+cd /path/to/your-taro-project
+npm link @lightgreen/taro-request
+```
+
+### 开发脚本
+
+- `pnpm build` - 构建一次
+- `pnpm dev` - 监听模式，文件变化时自动重新构建
+- `pnpm type-check` - 类型检查
+
+### 注意事项
+
+- 使用 `pnpm link` 后，修改库的源码需要重新构建（或使用 `pnpm dev` 自动构建）
+- 如果遇到模块找不到的问题，尝试删除 `node_modules` 和锁文件后重新安装
+- 调试完成后，记得取消链接：`pnpm unlink @lightgreen/taro-request`
+
 ## 📝 许可证
 
 MIT
@@ -341,8 +354,3 @@ MIT
 ## 🤝 贡献
 
 欢迎提交 Issue 和 Pull Request！
-
-## 📮 联系方式
-
-- GitHub: [@lightgreen](https://github.com/lightgreen)
-

@@ -1,15 +1,15 @@
 {
   "name": "@lightgreen/taro-request",
   "version": "1.0.0",
-  "description": "A lightweight HTTP request library for Taro framework with interceptors support",
-  "main": "dist/index.js",
-  "module": "dist/index.mjs",
-  "types": "dist/index.d.ts",
+  "description": "A lightweight HTTP request library for Taro3 with axios-style API",
+  "main": "dist/request.js",
+  "module": "dist/request.mjs",
+  "types": "dist/request.d.ts",
   "exports": {
     ".": {
-      "import": "./dist/index.mjs",
-      "require": "./dist/index.js",
-      "types": "./dist/index.d.ts"
+      "import": "./dist/request.mjs",
+      "require": "./dist/request.js",
+      "types": "./dist/request.d.ts"
     }
   },
   "files": [
@@ -18,17 +18,17 @@
   ],
   "scripts": {
     "build": "tsup",
+    "dev": "tsup --watch",
     "prepublishOnly": "npm run build",
     "type-check": "tsc --noEmit"
   },
   "keywords": [
     "taro",
+    "taro3",
     "request",
     "http",
     "axios",
-    "interceptor",
-    "wechat",
-    "miniprogram"
+    "interceptor"
   ],
   "author": "lightgreen",
   "license": "MIT",
